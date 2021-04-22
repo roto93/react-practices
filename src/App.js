@@ -1,8 +1,10 @@
 import './App.css';
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import styled, { ThemeProvider, css } from 'styled-components'
 import { MdClose } from 'react-icons/md'
-import { IoHeart } from "react-icons/io5";
+import { IoHeart } from "react-icons/io5"
+import { RiCalendar2Fill, RiMoneyDollarCircleFill, RiQuestionLine } from "react-icons/ri"
+import flagUrl from './貨幣調換.png'
 
 const theme = {
   primary: 'teal',
@@ -10,6 +12,10 @@ const theme = {
   alert: 'yellow',
   font: 'Arial',
 }
+
+const RowView = styled.div`
+  flex-direction:row;
+`
 
 const Screen = styled.div`
   width:360px;
@@ -55,6 +61,12 @@ const ConfirmButtonBox = styled.div`
   }
 `
 
+const Text = styled.p`
+  margin:0px;
+  padding:0px;
+
+`
+
 const TripImageBox = styled.div`
   width:104px;
   height:128px;
@@ -97,17 +109,19 @@ align-items:center;
 `
 
 const TextInputBox = styled.div`
-
+justify-content:center;
 `
 
 const InputTitle = styled.p`
+  cursor:text;
   margin:0px; 
   font-size:${props => (props.isFocus || props.primary) ? '12px' : '18px'};
   line-height:24px;
-  color:#4682E9;
+  color:${props => (props.isFocus || props.primary) ? '#4682E9' : '#ACD2FF'};
   position:absolute;
   transition:all 0.3s;
   transform: translate(0px, ${props => (props.isFocus || props.primary) ? '-10px' : '0px'});
+
 `
 
 const TextInput = styled.input`
@@ -116,21 +130,54 @@ const TextInput = styled.input`
   font-size:18px;
   line-height:24px;
   transition:all 0.3s;
-  transform:translate(0px, ${props => props.primary ? '8px' : '0px'});
+  height:56px;
+  padding-top:22px;
+  box-sizing:border-box;
 
   &:focus{
   outline: none;
-  transform: translate(0px, 8px);
+  }
+  &::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
+}
+`
+
+const BudgetInputBox = styled(InputBox)`
+  width:264px;
+  margin-bottom:0px;
+`
+
+const Flag = styled.img`
+  cursor: pointer;
+  width:30px;
+  height:30px;
+  margin-top:12px ;
+  margin-left:24px;
+  &:hover{
+    filter:drop-shadow(2px 2px 3px rgba(0,0,0,0.2))
+  }
+  &:active{
+    opacity:0.5;
+  }
+`
+
+const rate = 1 / 0.27
+const budget2JPY = (input) => {
+  if (typeof eval(input) !== 'number') return '0'
+  return Math.round(input * rate * 100) / 100
 }
 
-`
 
 
 function App() {
 
   const [tripName, setTripName] = useState('');
   const [budget, setBudget] = useState(0);
-  const [isTripNameFucus, setIsTripNameFucus] = useState(false);
+  const [isTripNameFocus, setIsTripNameFocus] = useState(false);
+  const [isBudgetFocus, setisBudgetFocus] = useState();
+  const tripNameRef = useRef(null)
+  const budgetRef = useRef(null)
   return (
     <ThemeProvider theme={theme}>
       <div className="App">
@@ -146,15 +193,46 @@ function App() {
             <TripImage></TripImage>
             <TripImageTitle>更換旅行圖示</TripImageTitle>
           </TripImageBox>
-          <InputBox>
-            <div className="icon-box">
-              <IoHeart size={'24'} color="#4682E9" />
+          <div>
+
+            <InputBox>
+              <div className="input-icon-box">
+                <IoHeart size={'24'} color="#4682E9" />
+              </div>
+              <TextInputBox onBlur={() => { setIsTripNameFocus(false) }} onClick={() => { setIsTripNameFocus(true); tripNameRef.current.focus() }}>
+                <InputTitle isFocus={isTripNameFocus} primary={tripName}>旅行名稱</InputTitle>
+                <TextInput ref={tripNameRef} primary={tripName} onChange={(e) => { setTripName(e.target.value) }} />
+              </TextInputBox>
+            </InputBox>
+            <InputBox>
+              <div className="input-icon-box">
+                <RiCalendar2Fill size={'24'} color="#4682E9" />
+              </div>
+              <TextInputBox >
+                <InputTitle >旅行日期</InputTitle>
+              </TextInputBox>
+            </InputBox>
+            <div style={{ flexDirection: 'row' }}>
+              <div className="ai-flex-end">
+                <BudgetInputBox>
+                  <div className="input-icon-box">
+                    <RiMoneyDollarCircleFill size={'24'} color="#4682E9" />
+                  </div>
+                  <TextInputBox onBlur={() => { setisBudgetFocus(false) }} onClick={() => { setisBudgetFocus(true); budgetRef.current.focus() }}>
+                    <InputTitle isFocus={isBudgetFocus} primary={budget}>你的預算</InputTitle>
+                    <TextInput type={'number'} ref={budgetRef} primary={budget} onChange={(e) => { setBudget(e.target.value) }} />
+                  </TextInputBox>
+                </BudgetInputBox>
+                <Text style={{ marginRight: '16px', fontSize: '14px', lineHeight: '24px', color: '#4682E9' }}>≈ {budget2JPY(budget)} JPY</Text>
+                <Text style={{ position: 'absolute', marginTop: '16px', marginRight: '16px', fontSize: '18px', lineHeight: '24px', color: '#4682E9' }}>NTD</Text>
+              </div>
+              <Flag src={flagUrl} />
             </div>
-            <TextInputBox onBlur={() => { setIsTripNameFucus(false) }} onClick={() => { setIsTripNameFucus(true) }}>
-              <InputTitle isFocus={isTripNameFucus} primary={tripName}>旅行名稱</InputTitle>
-              <TextInput primary={tripName} onChange={(e) => { setTripName(e.target.value) }} />
-            </TextInputBox>
-          </InputBox>
+          </div>
+          <RowView style={{ marginTop: '24px', alignItems: 'center' }}>
+            <SetRateText >自訂兌換日幣時的匯率?</SetRateText>
+            <RiQuestionLine size={20} color={'gray'} />
+          </RowView>
         </Screen>
       </div>
     </ThemeProvider>
@@ -163,3 +241,13 @@ function App() {
 
 export default App;
 
+const SetRateText = styled(Text)`
+  cursor:pointer;
+  font-size:12px;
+  line-height:24px;
+  margin-right:4px;
+  color:gray;
+  &:active{
+    opacity:0.5;
+  }
+`

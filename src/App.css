@@ -30,3 +30,13 @@ body * {
   background-color: #c5c4c4;
 }
 
+.input-icon-box {
+  width: 56px;
+  height: 56px;
+  justify-content: center;
+  align-items: center;
+}
+
+.ai-flex-end {
+  align-items: flex-end;
+}
