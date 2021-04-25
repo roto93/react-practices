@@ -1,42 +1,9 @@
-body * {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
-  user-select: none;
-}
-
 .App {
+  display: flex;
   text-align: center;
   justify-content: center;
   align-items: center;
   width: 100vw;
   height: 100vh;
   background-color: rgb(54, 54, 54);
-}
-
-.icon-box {
-  width: 56px;
-  height: 56px;
-  justify-content: center;
-  align-items: center;
-}
-.icon-box:hover {
-  font-weight: bold;
-  background-color: #eeeeee;
-}
-.icon-box:active {
-  font-weight: bold;
-  background-color: #c5c4c4;
-}
-
-.input-icon-box {
-  width: 56px;
-  height: 56px;
-  justify-content: center;
-  align-items: center;
-}
-
-.ai-flex-end {
-  align-items: flex-end;
 }
